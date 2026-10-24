@@ -256,7 +256,7 @@ window.XMOC_MEMBERS = [
   "key": "X-0345",
   "id": "X-0345",
   "name": "Irene BL",
-  "plate": "F 1451 AP",
+  "plate": "F 1329 ABA",
   "area": "F",
   "note": null,
   "group": "bogor"
@@ -858,7 +858,7 @@ window.XMOC_MEMBERS = [
  {
   "key": "X-1831",
   "id": "X-1831",
-  "name": "Hendriyanto S",
+  "name": "Hendriyanto",
   "plate": "F 1255 CF",
   "area": "F",
   "note": null,
@@ -2208,7 +2208,7 @@ window.XMOC_MEMBERS = [
  {
   "key": "X-5124",
   "id": "X-5124",
-  "name": "Mulya",
+  "name": "Amunk / Mulya",
   "plate": "F 1348 NO",
   "area": "F",
   "note": null,
@@ -2485,6 +2485,15 @@ window.XMOC_MEMBERS = [
   "group": "bogor"
  },
  {
+  "key": "X-5830",
+  "id": "X-5830",
+  "name": "Suharjo",
+  "plate": "G 1050 YQ",
+  "area": "G",
+  "note": null,
+  "group": "bogor"
+ },
+ {
   "key": "X-5881",
   "id": "X-5881",
   "name": "Akmal",
@@ -2570,6 +2579,213 @@ window.XMOC_MEMBERS = [
   "id": "X-6251",
   "name": "Purna",
   "plate": "F 1495 FAU",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6298",
+  "id": "X-6298",
+  "name": "Endi",
+  "plate": "B 1112 IB",
+  "area": "B",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6315",
+  "id": "X-6315",
+  "name": "Mukhlis",
+  "plate": "F 1664 FAV",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6373",
+  "id": "X-6373",
+  "name": "Echo",
+  "plate": "F 1866 AAW",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6378",
+  "id": "X-6378",
+  "name": "Rahmanda",
+  "plate": "B 2009 PFQ",
+  "area": "B",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6390",
+  "id": "X-6390",
+  "name": "Alex Tio",
+  "plate": "B 1930 DKE",
+  "area": "B",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6404",
+  "id": "X-6404",
+  "name": "Hadi Hardiyanto",
+  "plate": "R 1453 F",
+  "area": "R",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6412",
+  "id": "X-6412",
+  "name": "Josie armandino",
+  "plate": "B 2858 FFW",
+  "area": "B",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6421",
+  "id": "X-6421",
+  "name": "Hendra saputra",
+  "plate": "F 1514 FAS",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6471",
+  "id": "X-6471",
+  "name": "Adam tanjung",
+  "plate": "B 1398 DKX",
+  "area": "B",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6666",
+  "id": "X-6666",
+  "name": "Ghufron",
+  "plate": "F 1319 AAY",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6438",
+  "id": "X-6438",
+  "name": "Joko H",
+  "plate": "F 1243 RH",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6444",
+  "id": "X-6444",
+  "name": "Yovi",
+  "plate": "B 1518 HFO",
+  "area": "B",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6472",
+  "id": "X-6472",
+  "name": "Yosie",
+  "plate": "F 1326 ABA",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-3687",
+  "id": "X-3687",
+  "name": "Tirta",
+  "plate": "B 1162 NZI",
+  "area": "B",
+  "note": "pindahan tangray",
+  "group": "bogor"
+ },
+ {
+  "key": "X-6516",
+  "id": "X-6516",
+  "name": "Boim",
+  "plate": "F 1112 MA",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6527",
+  "id": "X-6527",
+  "name": "Bayu",
+  "plate": "F 1854 FBF",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6541",
+  "id": "X-6541",
+  "name": "Ria",
+  "plate": "F 1001 RIA",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6583",
+  "id": "X-6583",
+  "name": "Stephen",
+  "plate": "F 1328 FBM",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6588",
+  "id": "X-6588",
+  "name": "April",
+  "plate": "B 1544 VOT",
+  "area": "B",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6789",
+  "id": "X-6789",
+  "name": "Valent",
+  "plate": "F 1703 ABB",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6885",
+  "id": "X-6885",
+  "name": "Hendi",
+  "plate": "F 1534 MX",
+  "area": "F",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6865",
+  "id": "X-6865",
+  "name": "Ikhsan W",
+  "plate": "B 2443 UKJ",
+  "area": "B",
+  "note": null,
+  "group": "bogor"
+ },
+ {
+  "key": "X-6643",
+  "id": "X-6643",
+  "name": "Dita",
+  "plate": "F 1254 FNH",
   "area": "F",
   "note": null,
   "group": "bogor"

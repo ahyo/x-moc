@@ -12,6 +12,7 @@
     T: "Purwakarta · Karawang",
     G: "Pekalongan",
     P: "Besuki · Jember",
+    R: "Banyumas · Purwokerto",
     AB: "Yogyakarta",
     AG: "Kediri",
     BE: "Lampung",
