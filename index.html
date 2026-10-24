@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>XMOC Bogor Raya — Direktori Member</title>
+  <meta name="description" content="Direktori resmi member XMOC Bogor Raya — komunitas pemilik Xpander di Bogor dan sekitarnya." />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#0b0f17" />
+  <link rel="icon" href="assets/logo.svg" type="image/svg+xml" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+  <script>
+    try { const t = localStorage.getItem("xmoc-theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+  </script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a class="brand" href="#">
+        <img src="assets/logo.svg" alt="" width="36" height="36" />
+        <span><strong>XMOC</strong> Bogor Raya</span>
+      </a>
+      <nav class="topnav">
+        <a href="#direktori">Direktori</a>
+        <a href="#statistik">Statistik</a>
+        <button class="icon-btn" id="themeToggle" aria-label="Ganti tema" title="Ganti tema">
+          <svg class="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          <svg class="i-moon" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="container hero-inner">
+      <span class="eyebrow"><span class="dot"></span>Xpander Mitsubishi Owners Club</span>
+      <h1>Satu jalan, <span class="accent">satu keluarga.</span></h1>
+      <p class="lead">Direktori resmi member XMOC Bogor Raya. Cari sesama member berdasarkan nama, nomor member, atau plat nomor kendaraan.</p>
+      <div class="hero-stats" id="heroStats"></div>
+    </div>
+  </section>
+
+  <main class="container" id="direktori">
+    <div class="toolbar">
+      <label class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="search" placeholder="Cari nama, X-ID, atau plat…" autocomplete="off" spellcheck="false" />
+        <kbd>/</kbd>
+      </label>
+      <div class="toolbar-actions">
+        <select id="sort" aria-label="Urutkan">
+          <option value="id">Nomor Member</option>
+          <option value="name">Nama A–Z</option>
+          <option value="plate">Plat Nomor</option>
+        </select>
+        <div class="seg" role="group" aria-label="Tampilan">
+          <button data-view="grid" class="active" aria-label="Tampilan kartu"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
+          <button data-view="list" aria-label="Tampilan tabel"><svg viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg></button>
+        </div>
+        <button class="btn ghost" id="exportCsv" title="Unduh CSV">
+          <svg viewBox="0 0 24 24"><path d="M12 3v12m0 0-4-4m4 4 4-4M5 21h14"/></svg><span>CSV</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="chips" id="chips" role="tablist"></div>
+
+    <p class="result-meta" id="resultMeta" aria-live="polite"></p>
+
+    <div id="results"></div>
+
+    <div class="empty" id="empty" hidden>
+      <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/></svg>
+      <h3>Member tidak ditemukan</h3>
+      <p>Coba kata kunci lain atau hapus filter.</p>
+      <button class="btn" id="resetFilters">Reset pencarian</button>
+    </div>
+
+    <section class="stats" id="statistik">
+      <div class="section-head">
+        <h2>Statistik Member</h2>
+        <p>Sebaran member berdasarkan wilayah plat nomor.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="card stat-card">
+          <h3>Wilayah Plat</h3>
+          <div id="areaBars" class="bars"></div>
+        </div>
+        <div class="card stat-card">
+          <h3>Pertumbuhan Nomor Member</h3>
+          <p class="muted small">Jumlah member per rentang nomor X-ID.</p>
+          <div id="idBars" class="cols"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand small">
+        <img src="assets/logo.svg" alt="" width="28" height="28" />
+        <span><strong>XMOC</strong> Bogor Raya</span>
+      </div>
+      <p class="muted small" id="updated"></p>
+    </div>
+  </footer>
+
+  <dialog id="detail" class="sheet">
+    <form method="dialog" class="sheet-inner">
+      <button class="icon-btn close" value="close" aria-label="Tutup"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+      <div id="detailBody"></div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="data/members.js"></script>
+  <script src="assets/app.js"></script>
+</body>
+</html>
