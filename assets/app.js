@@ -42,7 +42,7 @@
 
   function avatarStyle(m) {
     let h = 0;
-    for (const c of m.id) h = (h * 31 + c.charCodeAt(0)) >>> 0;
+    for (const c of m.key) h =(h * 31 + c.charCodeAt(0)) >>> 0;
     const [a, b] = AVATAR_GRADIENTS[h % AVATAR_GRADIENTS.length];
     return `background:linear-gradient(135deg,${a},${b})`;
   }
@@ -71,7 +71,9 @@
       ? `<span class="plate ${cls}"><span>${highlight(m.plate, q)}</span></span>`
       : `<span class="plate none ${cls}">Plat belum terdata</span>`;
 
-  const searchKey = new Map(MEMBERS.map((m) => [m, compact([m.id, m.id.replace("X-", ""), m.name, m.plate, m.note].join(" "))]));
+  const idHtml = (m, q) => (m.id ? highlight(m.id, q) : `<span class="muted">Belum ada X-ID</span>`);
+
+  const searchKey = new Map(MEMBERS.map((m) => [m, compact([m.id, (m.id || "").replace("X-", ""), m.name, m.plate, m.note].join(" "))]));
   const nameKey = new Map(MEMBERS.map((m) => [m, compact(m.name)]));
 
   // ---------- filtering ----------
@@ -90,7 +92,7 @@
       return true;
     });
     const by = {
-      id: (a, b) => a.id.localeCompare(b.id),
+      id: (a, b) => (a.id ? 0 : 1) - (b.id ? 0 : 1) || (a.id || "").localeCompare(b.id || ""),
       name: (a, b) => nameKey.get(a).localeCompare(nameKey.get(b)),
       plate: (a, b) => (a.plate ? 0 : 1) - (b.plate ? 0 : 1) || (a.plate || "").localeCompare(b.plate || "", "id", { numeric: true }),
     }[state.sort];
@@ -104,11 +106,11 @@
       : m.area && AREAS[m.area]
         ? `<span class="tag">${esc(AREAS[m.area].split(" · ")[0])}</span>`
         : m.note ? `<span class="tag">${esc(m.note)}</span>` : "";
-    return `<button class="member" data-id="${m.id}" style="animation-delay:${Math.min(i, 24) * 14}ms">
+    return `<button class="member" data-id="${m.key}" style="animation-delay:${Math.min(i, 24) * 14}ms">
       <div class="member-top">
         <div class="avatar" style="${avatarStyle(m)}">${esc(initials(m.name))}</div>
         <div class="member-name">
-          <div class="xid">${highlight(m.id, state.q)}</div>
+          <div class="xid">${idHtml(m, state.q)}</div>
           <h3 title="${esc(m.name)}">${highlight(m.name, state.q)}</h3>
         </div>
       </div>
@@ -117,9 +119,9 @@
   }
 
   function rowHtml(m, i) {
-    return `<tr data-id="${m.id}" tabindex="0">
+    return `<tr data-id="${m.key}" tabindex="0">
       <td class="num">${i + 1}</td>
-      <td><span class="xid">${highlight(m.id, state.q)}</span></td>
+      <td><span class="xid">${idHtml(m, state.q)}</span></td>
       <td><div class="who"><div class="avatar" style="${avatarStyle(m)}">${esc(initials(m.name))}</div>${highlight(m.name, state.q)}</div></td>
       <td>${plateHtml(m, state.q)}</td>
       <td class="col-note muted">${esc(m.group === "gabungan" ? ["Chapter Gabungan", m.note].filter(Boolean).join(" · ") : m.note || "")}</td>
@@ -215,7 +217,7 @@
       </div>`).join("");
 
     const buckets = {};
-    MEMBERS.forEach((m) => { const b = Math.floor(parseInt(m.id.slice(2), 10) / 1000); buckets[b] = (buckets[b] || 0) + 1; });
+    MEMBERS.forEach((m) => { if (!m.id) return; const b =Math.floor(parseInt(m.id.slice(2), 10) / 1000); buckets[b] = (buckets[b] || 0) + 1; });
     const keys = Object.keys(buckets).map(Number).sort((a, b) => a - b);
     const bmax = Math.max(...Object.values(buckets));
     $("#idBars").innerHTML = keys.map((k, i) => `
@@ -229,10 +231,10 @@
 
   // ---------- detail ----------
   function openDetail(id) {
-    const m = MEMBERS.find((x) => x.id === id);
+    const m = MEMBERS.find((x) => x.key === id);
     if (!m) return;
     const rows = [
-      ["Nomor Member", `<span class="xid">${m.id}</span>`],
+      ["Nomor Member", m.id ? `<span class="xid">${m.id}</span>` : "Belum ada X-ID"],
       ["Chapter", m.group === "gabungan" ? `Chapter Gabungan${m.note ? " · " + esc(m.note) : ""}` : "Bogor Raya"],
       ["Wilayah Plat", m.area ? `${esc(m.area)} — ${esc(AREAS[m.area] || "Lainnya")}` : "Belum terdata"],
     ];
@@ -248,14 +250,14 @@
         <button type="button" class="btn ghost" data-act="copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Salin data</button>
         <button type="button" class="btn" data-act="share"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>Bagikan</button>
       </div>`;
-    const text = `${m.id} ${m.plate || ""} ${m.name}`.replace(/\s+/g, " ").trim() + " — XMOC Bogor Raya";
+    const text = `${m.id || ""} ${m.plate || ""} ${m.name}`.replace(/\s+/g, " ").trim() + " — XMOC Bogor Raya";
     $("#detailBody").onclick = async (e) => {
       const act = e.target.closest("[data-act]")?.dataset.act;
       if (act === "copy") {
         try { await navigator.clipboard.writeText(text); toast("Data member disalin"); } catch { toast("Gagal menyalin"); }
       } else if (act === "share") {
         const url = new URL(location.href);
-        url.search = "?m=" + m.id;
+        url.search = "?m=" + m.key;
         if (navigator.share) {
           navigator.share({ title: m.name, text, url: url.toString() }).catch(() => {});
         } else {
@@ -281,7 +283,7 @@
     const list = filtered();
     const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
     const csv = [["No", "X-ID", "Nama", "Plat Nomor", "Chapter", "Keterangan"]]
-      .concat(list.map((m, i) => [i + 1, m.id, m.name, m.plate || "", GROUPS[m.group], m.note || ""]))
+      .concat(list.map((m, i) => [i + 1, m.id || "", m.name, m.plate || "", GROUPS[m.group], m.note || ""]))
       .map((r) => r.map(cell).join(","))
       .join("\r\n");
     const a = document.createElement("a");

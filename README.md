@@ -14,7 +14,7 @@ Web app direktori member **XMOC Bogor Raya** (Xpander Mitsubishi Owners Club). S
 
 ## Update data member
 
-1. Edit [`data/members.txt`](data/members.txt) — satu member per baris: `X-XXXX PLAT Nama (catatan opsional)`.
+1. Edit [`data/members.txt`](data/members.txt) — satu member per baris: `X-XXXX PLAT Nama (catatan opsional)`. X-ID dan plat boleh dikosongkan.
 2. Jalankan `node scripts/build-data.mjs` untuk membuat ulang `data/members.js`.
 3. Commit dan push — GitHub Pages akan memperbarui situs otomatis.
 

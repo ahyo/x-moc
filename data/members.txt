@@ -1,5 +1,5 @@
 # Data member XMOC Bogor Raya.
-# Format per baris: X-XXXX [PLAT] Nama (catatan opsional)
+# Format per baris: [X-XXXX] [PLAT] Nama (catatan opsional) — X-ID dan plat boleh kosong
 # Setelah mengubah file ini, jalankan: node scripts/build-data.mjs
 
 [BOGOR RAYA]
@@ -295,3 +295,4 @@ X-3939 D1121VZA Didik Yohanes (Solo)
 X-3139 B2019PFY Septa Jayadi (Depok)
 X-4610 F1852AAB Dhanang Prasetyo
 X-1904 A1268BG Hendra (Seragon)
+Azhar (Bandung Raya)
