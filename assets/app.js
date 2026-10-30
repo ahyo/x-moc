@@ -1,51 +1,22 @@
 (() => {
   "use strict";
 
-  const MEMBERS = window.XMOC_MEMBERS || [];
+  const { AREAS, GROUPS, $, $$, esc, avatarHtml, toast, sb, auth } = window.XMOC;
 
-  // Kode wilayah plat nomor Indonesia (yang dipakai member).
-  const AREAS = {
-    F: "Bogor · Sukabumi · Cianjur",
-    B: "Jakarta · Depok · Tangerang · Bekasi",
-    D: "Bandung",
-    A: "Banten",
-    T: "Purwakarta · Karawang",
-    G: "Pekalongan",
-    P: "Besuki · Jember",
-    R: "Banyumas · Purwokerto",
-    AB: "Yogyakarta",
-    AG: "Kediri",
-    BE: "Lampung",
-  };
-  const GROUPS = { bogor: "Bogor Raya", gabungan: "Chapter Gabungan" };
-  const AVATAR_GRADIENTS = [
-    ["#ff4257", "#b3001b"], ["#ff8a3d", "#d9480f"], ["#f5b301", "#c77700"], ["#2fbf71", "#137a45"],
-    ["#22b8cf", "#0b7285"], ["#4c8dff", "#1e4fd8"], ["#7c5cff", "#4a2fd1"], ["#e64bbd", "#a61e80"],
-    ["#5b6b84", "#2f3a4d"],
-  ];
-
-  const $ = (s, el = document) => el.querySelector(s);
-  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+  // Tampil langsung dari data cadangan, lalu diganti data live dari Supabase begitu termuat.
+  let MEMBERS = window.XMOC_MEMBERS || [];
+  let updatedAt = window.XMOC_UPDATED;
+  let searchKey, nameKey;
 
   const state = { q: "", filter: "all", sort: "id", view: "grid" };
 
   // ---------- helpers ----------
   const norm = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
   const compact = (s) => norm(s).replace(/[\s\-./]/g, "");
-  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
-  function initials(name) {
-    const parts = name.replace(/[^\p{L}\p{N}\s]/gu, " ").trim().split(/\s+/).filter(Boolean);
-    if (!parts.length) return "?";
-    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-
-  function avatarStyle(m) {
-    let h = 0;
-    for (const c of m.key) h =(h * 31 + c.charCodeAt(0)) >>> 0;
-    const [a, b] = AVATAR_GRADIENTS[h % AVATAR_GRADIENTS.length];
-    return `background:linear-gradient(135deg,${a},${b})`;
+  function indexMembers() {
+    searchKey = new Map(MEMBERS.map((m) => [m, compact([m.id, (m.id || "").replace("X-", ""), m.name, m.plate, m.note, m.city, m.car_variant].join(" "))]));
+    nameKey = new Map(MEMBERS.map((m) => [m, compact(m.name)]));
   }
 
   // Menandai bagian teks yang cocok dengan kata kunci, toleran terhadap spasi pada plat.
@@ -74,9 +45,6 @@
 
   const idHtml = (m, q) => (m.id ? highlight(m.id, q) : `<span class="muted">Belum ada X-ID</span>`);
 
-  const searchKey = new Map(MEMBERS.map((m) => [m, compact([m.id, (m.id || "").replace("X-", ""), m.name, m.plate, m.note].join(" "))]));
-  const nameKey = new Map(MEMBERS.map((m) => [m, compact(m.name)]));
-
   // ---------- filtering ----------
   function filtered() {
     const q = compact(state.q);
@@ -104,12 +72,13 @@
   function cardHtml(m, i) {
     const tag = m.group === "gabungan"
       ? `<span class="tag gold">${esc(m.note ? "Gabungan · " + m.note : "Chapter Gabungan")}</span>`
+      : m.city ? `<span class="tag">${esc(m.city)}</span>`
       : m.area && AREAS[m.area]
         ? `<span class="tag">${esc(AREAS[m.area].split(" · ")[0])}</span>`
         : m.note ? `<span class="tag">${esc(m.note)}</span>` : "";
-    return `<button class="member" data-id="${m.key}" style="animation-delay:${Math.min(i, 24) * 14}ms">
+    return `<button class="member" data-id="${esc(m.key)}" style="animation-delay:${Math.min(i, 24) * 14}ms">
       <div class="member-top">
-        <div class="avatar" style="${avatarStyle(m)}">${esc(initials(m.name))}</div>
+        ${avatarHtml(m)}
         <div class="member-name">
           <div class="xid">${idHtml(m, state.q)}</div>
           <h3 title="${esc(m.name)}">${highlight(m.name, state.q)}</h3>
@@ -120,12 +89,12 @@
   }
 
   function rowHtml(m, i) {
-    return `<tr data-id="${m.key}" tabindex="0">
+    return `<tr data-id="${esc(m.key)}" tabindex="0">
       <td class="num">${i + 1}</td>
       <td><span class="xid">${idHtml(m, state.q)}</span></td>
-      <td><div class="who"><div class="avatar" style="${avatarStyle(m)}">${esc(initials(m.name))}</div>${highlight(m.name, state.q)}</div></td>
+      <td><div class="who">${avatarHtml(m)}${highlight(m.name, state.q)}</div></td>
       <td>${plateHtml(m, state.q)}</td>
-      <td class="col-note muted">${esc(m.group === "gabungan" ? ["Chapter Gabungan", m.note].filter(Boolean).join(" · ") : m.note || "")}</td>
+      <td class="col-note muted">${esc(m.group === "gabungan" ? ["Chapter Gabungan", m.note].filter(Boolean).join(" · ") : [m.note, m.city].filter(Boolean).join(" · "))}</td>
     </tr>`;
   }
 
@@ -175,7 +144,7 @@
     ).join("");
   }
 
-  function renderHero() {
+  function renderHero(animate = true) {
     const bogor = MEMBERS.filter((m) => m.group === "bogor").length;
     const plateF = MEMBERS.filter((m) => m.area === "F").length;
     const regions = new Set(MEMBERS.map((m) => m.area).filter(Boolean)).size;
@@ -186,7 +155,7 @@
       [regions, "Wilayah plat"],
     ];
     $("#heroStats").innerHTML = stats.map(([v, l]) => `<div class="hero-stat"><b data-count="${v}">${v}</b><span>${l}</span></div>`).join("");
-    animateCounts();
+    if (animate) animateCounts();
   }
 
   function animateCounts() {
@@ -218,7 +187,7 @@
       </div>`).join("");
 
     const buckets = {};
-    MEMBERS.forEach((m) => { if (!m.id) return; const b =Math.floor(parseInt(m.id.slice(2), 10) / 1000); buckets[b] = (buckets[b] || 0) + 1; });
+    MEMBERS.forEach((m) => { if (!m.id) return; const b = Math.floor(parseInt(m.id.slice(2), 10) / 1000); buckets[b] = (buckets[b] || 0) + 1; });
     const keys = Object.keys(buckets).map(Number).sort((a, b) => a - b);
     const bmax = Math.max(...Object.values(buckets));
     $("#idBars").innerHTML = keys.map((k, i) => `
@@ -227,30 +196,61 @@
         <small>${k}xxx</small>
       </div>`).join("");
 
-    $("#updated").textContent = `Data diperbarui ${new Date(window.XMOC_UPDATED || Date.now()).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} · ${MEMBERS.length} member`;
+    $("#updated").textContent = `Data diperbarui ${new Date(updatedAt || Date.now()).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })} · ${MEMBERS.length} member`;
   }
 
   // ---------- detail ----------
+  const ICONS = {
+    copy: `<svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>`,
+    share: `<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>`,
+    edit: `<svg viewBox="0 0 24 24"><path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>`,
+    wa: `<svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>`,
+    ig: `<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><path d="M17.5 6.5h.01"/></svg>`,
+  };
+
+  async function contactHtml(m) {
+    if (!sb) return "";
+    if (!auth.session) return `<p class="contact-note">Kontak member hanya terlihat oleh sesama member. <button class="link-btn" data-login>Masuk</button></p>`;
+    if (!auth.account?.member_key && !window.XMOC.isAdmin()) return `<p class="contact-note">Kontak terlihat setelah akun Anda diverifikasi. <a href="profile.html">Hubungkan akun</a></p>`;
+    const { data } = await sb.from("member_contacts").select("whatsapp,instagram").eq("member_key", m.key).maybeSingle();
+    const wa = window.XMOC.waLink(data?.whatsapp);
+    const ig = (data?.instagram || "").replace(/^@/, "");
+    if (!wa && !ig) return `<p class="contact-note">Member ini belum mengisi kontak.</p>`;
+    return `<div class="contact-row">
+      ${wa ? `<a class="btn ghost" href="${wa}" target="_blank" rel="noopener">${ICONS.wa}WhatsApp</a>` : ""}
+      ${ig ? `<a class="btn ghost" href="https://instagram.com/${encodeURIComponent(ig)}" target="_blank" rel="noopener">${ICONS.ig}@${esc(ig)}</a>` : ""}
+    </div>`;
+  }
+
   function openDetail(id) {
     const m = MEMBERS.find((x) => x.key === id);
     if (!m) return;
+    const car = [m.car_variant && "Xpander " + m.car_variant, m.car_color, m.car_year].filter(Boolean).join(" · ");
     const rows = [
-      ["Nomor Member", m.id ? `<span class="xid">${m.id}</span>` : "Belum ada X-ID"],
+      ["Nomor Member", m.id ? `<span class="xid">${esc(m.id)}</span>` : "Belum ada X-ID"],
       ["Chapter", m.group === "gabungan" ? `Chapter Gabungan${m.note ? " · " + esc(m.note) : ""}` : "Bogor Raya"],
       ["Wilayah Plat", m.area ? `${esc(m.area)} — ${esc(AREAS[m.area] || "Lainnya")}` : "Belum terdata"],
     ];
+    if (m.city) rows.push(["Domisili", esc(m.city)]);
+    if (car) rows.push(["Kendaraan", esc(car)]);
     if (m.note && m.group !== "gabungan") rows.push(["Keterangan", esc(m.note)]);
+    const canEdit = window.XMOC.isAdmin() || (auth.account?.member_key && auth.account.member_key === m.key);
+    const editHref = auth.account?.member_key === m.key ? "profile.html" : `admin.html?edit=${encodeURIComponent(m.key)}`;
     $("#detailBody").innerHTML = `
       <div class="detail-head">
-        <div class="avatar lg" style="${avatarStyle(m)}">${esc(initials(m.name))}</div>
+        ${avatarHtml(m, "lg")}
         <h2>${esc(m.name)}</h2>
         ${plateHtml(m, "", "lg")}
+        ${m.bio ? `<p class="bio">${esc(m.bio)}</p>` : ""}
       </div>
       <dl class="detail-list">${rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join("")}</dl>
+      <div id="detailContact"></div>
       <div class="detail-actions">
-        <button type="button" class="btn ghost" data-act="copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>Salin data</button>
-        <button type="button" class="btn" data-act="share"><svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></svg>Bagikan</button>
-      </div>`;
+        <button type="button" class="btn ghost" data-act="copy">${ICONS.copy}Salin data</button>
+        <button type="button" class="btn" data-act="share">${ICONS.share}Bagikan</button>
+      </div>
+      ${canEdit ? `<a class="btn ghost block edit-link" href="${editHref}">${ICONS.edit}Edit data</a>` : ""}`;
+    contactHtml(m).then((html) => { const el = $("#detailContact"); if (el) el.innerHTML = html; });
     const text = `${m.id || ""} ${m.plate || ""} ${m.name}`.replace(/\s+/g, " ").trim() + " — XMOC Bogor Raya";
     $("#detailBody").onclick = async (e) => {
       const act = e.target.closest("[data-act]")?.dataset.act;
@@ -271,20 +271,11 @@
   }
 
   // ---------- misc ----------
-  let toastTimer;
-  function toast(msg) {
-    const t = $("#toast");
-    t.textContent = msg;
-    t.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.classList.remove("show"), 1800);
-  }
-
   function exportCsv() {
     const list = filtered();
     const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
-    const csv = [["No", "X-ID", "Nama", "Plat Nomor", "Chapter", "Keterangan"]]
-      .concat(list.map((m, i) => [i + 1, m.id || "", m.name, m.plate || "", GROUPS[m.group], m.note || ""]))
+    const csv = [["No", "X-ID", "Nama", "Plat Nomor", "Chapter", "Keterangan", "Domisili"]]
+      .concat(list.map((m, i) => [i + 1, m.id || "", m.name, m.plate || "", GROUPS[m.group], m.note || "", m.city || ""]))
       .map((r) => r.map(cell).join(","))
       .join("\r\n");
     const a = document.createElement("a");
@@ -302,7 +293,7 @@
     if (state.sort !== "id") p.set("s", state.sort);
     if (state.view !== "grid") p.set("v", state.view);
     const qs = p.toString();
-    history.replaceState(null, "", qs ? "?" + qs : location.pathname);
+    history.replaceState(null, "", (qs ? "?" + qs : location.pathname) + location.hash);
   }
 
   function readUrl() {
@@ -331,11 +322,24 @@
   $("#sort").value = state.sort;
   $$(".seg button").forEach((b) => b.classList.toggle("active", b.dataset.view === state.view));
 
+  indexMembers();
   renderHero();
   renderChips();
   renderStats();
   render();
-  if (deepLink) openDetail(deepLink.toUpperCase());
+
+  window.XMOC.fetchMembers().then(({ members, live }) => {
+    if (live) {
+      MEMBERS = members;
+      updatedAt = members.reduce((max, m) => (m.updated_at > max ? m.updated_at : max), "") || updatedAt;
+      indexMembers();
+      renderHero(false);
+      renderChips();
+      renderStats();
+      render();
+    }
+    if (deepLink) openDetail(deepLink.toUpperCase());
+  });
 
   let debounce;
   $("#q").addEventListener("input", (e) => {
@@ -366,7 +370,7 @@
   $("#detail").addEventListener("click", (e) => { if (e.target === e.currentTarget) e.currentTarget.close(); });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === "/" && document.activeElement !== $("#q") && !$("#detail").open) {
+    if (e.key === "/" && document.activeElement !== $("#q") && !document.querySelector("dialog[open]")) {
       e.preventDefault();
       $("#q").focus();
       $("#q").select();
@@ -374,16 +378,4 @@
       $("#q").value = ""; state.q = ""; render();
     }
   });
-
-  $("#themeToggle").addEventListener("click", () => {
-    const root = document.documentElement;
-    const current = root.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-    const next = current === "dark" ? "light" : "dark";
-    root.dataset.theme = next;
-    try { localStorage.setItem("xmoc-theme", next); } catch {}
-  });
-
-  if ("serviceWorker" in navigator && location.protocol === "https:") {
-    navigator.serviceWorker.register("sw.js").catch(() => {});
-  }
 })();

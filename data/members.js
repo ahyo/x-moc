@@ -2836,4 +2836,4 @@ window.XMOC_MEMBERS = [
   "group": "gabungan"
  }
 ];
-window.XMOC_UPDATED = "2026-10-24";
+window.XMOC_UPDATED = "2026-10-30";
